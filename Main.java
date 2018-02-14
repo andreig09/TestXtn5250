@@ -1,15 +1,16 @@
 import net.infordata.em.crt5250.XI5250Crt;
 import net.infordata.em.crt5250.XI5250CrtFrame;
+import net.infordata.em.crt5250.XI5250Field;
 import net.infordata.em.tn5250.XI5250Emulator;
-import net.infordata.em.tn5250.XI5250EmulatorCtrl;
+import net.infordata.em.tn5250.XI5250EmulatorMemento;
+
+import java.util.List;
 
 public class Main {
     public static void main(String[] argv) {
-        //XITelnet tn = new XITelnet("rikas.rikascom.net");
         XI5250Emulator em  = new XI5250Emulator();
         em.setHost("rikas.rikascom.net");
         em.setTerminalType("IBM-3477-FC");
-        XI5250EmulatorCtrl emctrl = new XI5250EmulatorCtrl(em);
 
         try {
             em.setActive(true);
@@ -20,6 +21,8 @@ public class Main {
 
             Thread.sleep(5000);
 
+            exploreFields(em);
+
             takeSnapShot(em);
 
             System.out.println(getScreenAsString(em));
@@ -27,7 +30,7 @@ public class Main {
             em.setActive(false);
             if (!em.isActive()){
                 System.out.println("System disconnected");
-                return;
+
             }
         }
         catch (Exception ex) {
@@ -56,6 +59,23 @@ public class Main {
         }
 
         return screen;
+    }
+
+    public static void exploreFields(XI5250Emulator emu){
+        List<XI5250Field> fields = emu.getFields();
+        for (int i=0;i<fields.size();i++){
+            if (!fields.get(i).isBypassField()){
+
+                int pos = fields.get(i).getCol();
+                int posIni = 0;
+
+                if (pos > (emu.getCrtSize().width/2)){
+                    posIni = pos - (emu.getCrtSize().width/2);
+                }
+                System.out.println("field " + i +
+                        " str at left = " + emu.getString(posIni,fields.get(i).getRow(),(pos-posIni)));
+            }
+        }
     }
 
 
