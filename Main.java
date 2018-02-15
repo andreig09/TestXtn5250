@@ -2,8 +2,9 @@ import net.infordata.em.crt5250.XI5250Crt;
 import net.infordata.em.crt5250.XI5250CrtFrame;
 import net.infordata.em.crt5250.XI5250Field;
 import net.infordata.em.tn5250.XI5250Emulator;
-import net.infordata.em.tn5250.XI5250EmulatorMemento;
 
+
+import java.awt.event.KeyEvent;
 import java.util.List;
 
 public class Main {
@@ -22,6 +23,22 @@ public class Main {
             Thread.sleep(5000);
 
             exploreFields(em);
+
+            takeSnapShot(em);
+
+            System.out.println(getScreenAsString(em));
+
+            XI5250Field userField = em.getFieldFromPos(52,6);
+            XI5250Field pwdField = em.getFieldFromPos(52,8);
+
+            userField.setString("usr");
+            pwdField.setString("pwd123");
+
+            //simulate the user ENTER key pressed
+            em.processRawKeyEvent(
+                    new KeyEvent(em, KeyEvent.KEY_PRESSED,0,0,KeyEvent.VK_ENTER, KeyEvent.CHAR_UNDEFINED));
+
+            Thread.sleep(5000);
 
             takeSnapShot(em);
 
@@ -77,6 +94,5 @@ public class Main {
             }
         }
     }
-
 
 }
